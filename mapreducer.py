@@ -385,9 +385,10 @@ class trajectory:
             delta_t = self.data[i][0] - self.data[i-1][0]
             if delta_t == 0:
                 return []
+        tot = ''
         for txyi in self.data:
-            print '%d %.8f %.8f %s,' % (txyi[0], txyi[1], txyi[2], txyi[3]),
-        print
+            tot += '%d %.8f %.8f %s,' % (txyi[0], txyi[1], txyi[2], txyi[3])
+        print tot
         return []
 
 
