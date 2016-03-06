@@ -381,14 +381,16 @@ class trajectory:
 
     def cleaning(self):
         ptsnum = len(self.data)
+        data = [self.data[0]]
         for i in xrange(1, ptsnum):
             delta_t = self.data[i][0] - self.data[i-1][0]
-            if delta_t == 0:
-                return []
-        tot = ''
-        for txyi in self.data:
-            tot += '%d %.8f %.8f %s,' % (txyi[0], txyi[1], txyi[2], txyi[3])
-        print tot
+            if delta_t != 0:
+                data.append(self.data[i])
+        if len(data) > self.traj_len_limit:
+            tot = ''
+            for txyi in data:
+                tot += '%d %.8f %.8f %s,' % (txyi[0], txyi[1], txyi[2], txyi[3])
+            print tot
         return []
 
 
@@ -469,6 +471,8 @@ def GPXparse(content):
     content1 = content.split(',')[:-1]
     data = []
     for strtxyi in content1:
+        if strtxyi[0] == ' ':
+            strtxyi = strtxyi[1:]
         txyi = strtxyi.split(' ')
         data.append(
             [int(txyi[0]), float(txyi[1]), float(txyi[2]), int(txyi[3])])
