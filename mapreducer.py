@@ -7,7 +7,7 @@ import random
 class trajectory:
     R = 6371000  # Earth radius in meters
     time_gap_limit = 20  # seconds
-    ajac_dist_limit = 1000  # meters
+    ajac_dist_limit = 2000  # meters
     indicator_list = ('rural', 'urban', 'intermediate', 'all',
                       'urban-rural', 'rural-urban',
                       'urban-rural-urban', 'rural-urban-rural',
@@ -21,20 +21,27 @@ class trajectory:
     _trip_time_limit = _stay_duration_condition * 2 + _time_between_stays_limit
     traj_len_limit = int(_trip_time_limit/time_gap_limit)
     _resolution_limit = _stay_radius_threshold
-    _speed_upper_limit = 447
+    _speed_upper_limit = 340
+    # m/s, currently, there is no supersonic transport in commercial service (after 2003)
+    _trip_length_limit = _stay_radius_threshold  # meters, abandon shorter trips
     # m/s, which is 1000mph, roughly the top speed for current commercial airplanes
 
     def __init__(self, data):
         self.data = data
         self.len = len(data)
         self.indicator = self.cal_indicator(data)
-        self.trip_time_limit_fail = self.check_time_limit()
+        self.l0 = self.get_lt0()
+        self.trip_lt_limit_fail = self.check_lt_limit()
 
     def __str__(self):
         return str(self.data)
 
-    def check_time_limit(self):
-        return self.data[self.len - 1][0] - self.data[0][0] < self._trip_time_limit
+    def check_lt_limit(self):
+        l_fail = self.l0[0][0] < self._trip_length_limit or self.l0[0][0] > 80060347
+        # 80060347 (2*Pi*R * 2) is the upper limit of valid trip length
+        t_fail = self.l0[0][1] < self._trip_time_limit
+        v_fail = self.l0[0][0] / self.l0[0][1] > self._speed_upper_limit if not t_fail else True
+        return t_fail or l_fail or v_fail
 
     def cal_indicator(self, data):
         indicator_array = set()
@@ -199,7 +206,7 @@ class trajectory:
             return minimum_circle
 
         ptsnum = self.len
-        if self.trip_time_limit_fail:
+        if self.trip_lt_limit_fail:
             return []
         indicator = self.indicator
         t = 0
@@ -220,7 +227,7 @@ class trajectory:
 
     def r_g(self):
         ptsnum = self.len
-        if self.trip_time_limit_fail:
+        if self.trip_lt_limit_fail:
             return []
         indicator = self.indicator
         t = 0
@@ -242,7 +249,7 @@ class trajectory:
 
     def ds_temp(self):
         ptsnum = self.len
-        if self.trip_time_limit_fail:
+        if self.trip_lt_limit_fail:
             return []
         stays_raw = []
         for i in xrange(0, ptsnum - 1):
@@ -294,7 +301,7 @@ class trajectory:
         return stays
 
     def d(self):
-        if self.trip_time_limit_fail:
+        if self.trip_lt_limit_fail:
             return []
         stays = self.ds_temp()
         if len(stays) < 2:
@@ -308,7 +315,7 @@ class trajectory:
         return d_list
 
     def s(self):
-        if self.trip_time_limit_fail:
+        if self.trip_lt_limit_fail:
             return []
         stays = self.ds_temp()
         if len(stays) < 2:
@@ -326,10 +333,8 @@ class trajectory:
             s_list.append([s, delta_t, indicator])
         return s_list
 
-    def l(self):
+    def get_lt0(self):
         ptsnum = self.len
-        if self.trip_time_limit_fail:
-            return []
         l, t = 0, 0
         indicator = self.indicator
         for i in xrange(1, ptsnum):
@@ -338,10 +343,17 @@ class trajectory:
             delta_t = self.data[i][0] - self.data[i - 1][0]
             l += delta_d
             t += delta_t
-        return [(l, t, indicator)] * (l > 1.0 and l < 40075000.0)
+        return [(l, t, indicator)]
+
+    def l(self):
+        if self.trip_lt_limit_fail:
+            return []
+        return self.l0
 
     def r_t(self):
         ptsnum = self.len
+        if self.trip_lt_limit_fail:
+            return []
         if self.data[ptsnum - 1][0] - self.data[0][0] < self._time_interval:
             return []
         indicator = self.indicator
@@ -357,7 +369,7 @@ class trajectory:
 
     def d_i(self):
         ptsnum = self.len
-        if self.trip_time_limit_fail:
+        if self.trip_lt_limit_fail:
             return []
         indicator = self.indicator
         d_list = []
@@ -381,6 +393,8 @@ class trajectory:
 
     def cleaning(self):
         ptsnum = len(self.data)
+        if self.trip_lt_limit_fail:
+            return []
         data = [self.data[0]]
         for i in xrange(1, ptsnum):
             delta_t = self.data[i][0] - self.data[i-1][0]
@@ -509,23 +523,25 @@ def reducer():
             print line
         return 0
     distrib = {}
+    total_count = 0.0
     for i in trajectory.indicator_list:
         distrib[i] = ([0.0] * maxloglen)
     for line in content:
         line = line.strip()
         content = line.split()
         indicator = content[0]
-        d = float(content[1])
-        if d < min_resolution:
+        quantity = float(content[1])
+        if quantity < min_resolution:
             continue
-        d_index = int(math.log(d / min_resolution, base) * logres)
-        distrib[indicator][d_index] += 1.0
+        quantity_index = int(math.log(quantity / min_resolution, base) * logres)
+        distrib[indicator][quantity_index] += 1.0
+        total_count += 1
         # print indicator, d_index, distrib[indicator][d_index] + '\n'
     for i in trajectory.indicator_list:
         count = sum(distrib[i])
         if not count:
             continue
-        print i
+        print i, '%.1f%%' % (count / total_count * 200)
         for j in xrange(maxloglen):
             if distrib[i][j] > 0.5:
                 x = math.pow(base, (j + 0.5) / logres)
