@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# Author: Xiangwen Wang
+# License: GPL v3
 import sys
 import math
 import random

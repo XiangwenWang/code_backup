@@ -92,7 +92,7 @@ def curr_tar_x(currpath):
         elif x.find('tar.xz') > 0:
             gc.collect()
             os.system('echo ' + x)
-            xx = x[:x.find('tar.xz')-1]
+            xx = x[:x.find('tar.xz') - 1]
             os.system('mkdir ' + xx)
             os.system('tar xvJf ' + x + ' -C ' + xx)
             global md5list
