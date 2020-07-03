@@ -1,0 +1,26 @@
+{"namespace": "cs5604.tweet.NoiseReduction",
+ "type": "record",
+ "name": "TweetNoiseReduction",
+ "fields": [
+     {"name": "doc_id", "type": "string"},
+     {"doc": "original", "name": "tweet_id", "type": "string"},
+     {"doc": "original", "name": "text_clean", "type": "string"},
+     {"doc": "original", "name": "text_original", "type": "string"},
+     {"doc": "original", "name": "created_at",  "type": "string"},
+     {"doc": "original", "name": "user_screen_name", "type": "string"},
+     {"doc": "original", "name": "user_id", "type": "string"},
+     {"doc": "original", "name": "source", "type": ["string", "null"]},
+     {"doc": "original", "name": "lang", "type": ["string", "null"]},
+     {"doc": "original", "name": "favorite_count", "type": ["int", "null"]},
+     {"doc": "original", "name": "retweet_count", "type": ["int", "null"]},
+     {"doc": "original", "name": "contributors_id", "type": ["string", "null"]},
+     {"doc": "original", "name": "coordinates", "type": ["string", "null"]},
+     {"doc": "original", "name": "urls", "type": ["string", "null"]},
+     {"doc": "original", "name": "hashtags", "type": ["string", "null"]},
+     {"doc": "original", "name": "user_mentions_id", "type": ["string", "null"]},
+     {"doc": "original", "name": "in_reply_to_user_id", "type": ["string", "null"]},
+     {"doc": "original", "name": "in_reply_to_status_id", "type": ["string", "null"]},
+     {"doc": "original", "name": "text_clean2", "type": ["null", "string"], "default": null},
+     {"doc": "original", "name": "collection", "type": ["null", "string"], "default": null}
+ ]
+}

@@ -1,0 +1,24 @@
+{"namespace": "cs5604.webpage.NoiseReduction",
+"type": "record",
+"name": "WebpageNoiseReduction",
+"fields": [
+    {"name": "doc_id", "type": "string"},
+    {"doc": "original", "name": "text_clean", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "text_original", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "created_at",  "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "accessed_at",  "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "author", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "subtitle", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "section", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "lang", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "coordinates", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "urls", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "content_type", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "text_clean2", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "collection", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "title", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "url", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "appears_in_tweet_ids", "type": ["null", "string"], "default": null},
+    {"doc": "original", "name": "domain", "type": ["null", "string"], "default": null}
+
+]}

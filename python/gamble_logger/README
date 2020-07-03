@@ -1,0 +1,6 @@
+A logger for gathering gambling data from csgofast.com
+
+Headless Firefox with is used to monitor the users' betting behavior. Beautifulsoup and regular expresion are used to extract the gambling data. The data are directly saved to a postgresql database. UserID is first hashed to remove any account-identifiable information.
+
+Package used:
+Beautifulsoup, hashlib, joblib, psycopg2, re, selenium
